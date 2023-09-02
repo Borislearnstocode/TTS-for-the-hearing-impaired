@@ -1,0 +1,76 @@
+"""
+
+HEATMAP I
+
+"""
+# Generate random data
+x_entries = 256
+y_entries = 15
+
+data_target = np.random.rand(y_entries, x_entries)
+# Create heatmap
+plt.imshow(data_target, cmap='viridis', aspect='auto')
+# Display the plot
+plt.title('Target Speech',fontsize=20)
+plt.show()
+
+
+# Amplified Demo
+data_amplified = 2*np.random.rand(y_entries, x_entries)
+# Create heatmap
+plt.imshow(data_amplified, cmap='magma', aspect='auto')
+# Display the plot
+plt.title('Synthetic Speech',fontsize=20)
+plt.show()
+
+"""
+
+HEATMAP II
+
+"""
+# Generate random data
+x_entries = 30
+y_entries = 15
+
+data_target = np.random.rand(y_entries, x_entries)
+# Create heatmap
+plt.imshow(data_target, cmap='viridis', aspect='auto')
+# Display the plot
+plt.title('Target Speech', fontsize=20)
+plt.show()
+
+
+# Amplified Demo
+data_amplified = 2*np.random.rand(y_entries, x_entries)
+# Create heatmap
+plt.imshow(data_amplified, cmap='magma', aspect='auto')
+# Display the plot
+plt.title('Synthetic Speech', fontsize=20)
+plt.show()
+
+# Define the working directory
+wd_clean = '/content/drive/MyDrive/Thesis LangSci/STOI/N3'
+clean_audio_name = "LJ046-0180.wav"
+
+wd_amplified = '/content/drive/MyDrive/Thesis LangSci/STOI/out_n3_new'
+amplified_audio_name = "630500_LJ046-0180.wav"
+# Load the .wav file
+clean_audio_file = os.path.join(wd_clean, clean_audio_name)
+clean_waveform, clean_sample_rate = librosa.load(clean_audio_file, sr=None)
+
+amplified_audio_file = os.path.join(wd_amplified, amplified_audio_name)
+amplified_waveform, amplified_sample_rate = librosa.load(amplified_audio_file, sr=None)
+
+# Plot the waveform
+plt.figure(figsize=(10, 4))
+librosa.display.waveshow(clean_waveform, sr=clean_sample_rate)
+plt.title('Target Speech',fontsize=20)
+plt.axis("off")
+plt.show()
+
+# Plot the waveform
+plt.figure(figsize=(10, 4))
+librosa.display.waveshow(amplified_waveform, sr=amplified_sample_rate)
+plt.title('Synthetic Speech',fontsize=20)
+plt.axis("off")
+plt.show()
