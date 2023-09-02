@@ -1,0 +1,272 @@
+
+  arrange(models)
+
+raw_n3 <- data_n3 %>% 
+  gather(models, stoi_n3, 1:51) %>% 
+  arrange(models)
+
+raw_n4 <- data_n4 %>% 
+  gather(models, stoi_n4, 1:51) %>% 
+  arrange(models)
+
+raw_n5 <- data_n5 %>% 
+  gather(models, stoi_n5, 1:51) %>% 
+  arrange(models)
+
+raw_s1 <- data_s1 %>% 
+  gather(models, stoi_s1, 1:51) %>% 
+  arrange(models)
+
+# Combine the data into one DataFrame and get rid of the X in the model names
+NS_stoi <- bind_cols(raw_n2$models,
+                     raw_n2$stoi_n2, 
+                     raw_n3$stoi_n3, 
+                     raw_n4$stoi_n4,
+                     raw_n5$stoi_n5, 
+                     raw_s1$stoi_s1) %>% 
+set_names(c("Iterations","stoi_n2","stoi_n3",
+            "stoi_n4", "stoi_n5", "stoi_s1"))
+
+NS_stoi$Iterations <- gsub("^X", "", NS_stoi$Iterations)
+
+
+
+
+
+
+
+############################
+#  PART I (MODIFY THE DF)  #   
+############################
+# Covert the dataset into a longer format
+NS_stoi_long <- NS_stoi %>%
+  pivot_longer(cols = starts_with("stoi_"), names_to = "Model", values_to = "STOI") %>% 
+  mutate(Model = str_replace(Model, "stoi_", ""))
+
+# Calculate the mean and SD  
+NS_long_stats <- NS_stoi_long %>% 
+  group_by(Iterations, Model) %>% 
+  summarize(mean_stoi = mean(STOI),
+            sd_stoi = sd(STOI))
+
+NS_stoi_long$Iterations <- as.factor(NS_stoi_long$Iterations)
+
+# Shapiro test for normality
+normality_ns <- NS_stoi_long %>%
+  group_by(Iterations, Model) %>%
+  shapiro_test(STOI)
+
+# Check outliers
+outlier_ns <- NS_stoi_long %>%
+  group_by(Iterations, Model) %>%
+  identify_outliers(STOI)
+
+ggplot(NS_stoi_long, aes(Iterations, STOI, color = Model)) +
+  theme_bw()+  
+  scale_x_discrete(breaks = levels(NS_stoi_long$Iterations)[seq(1, length(levels(NS_stoi_long$Iterations)),by = 4)])+
+  geom_boxplot()
+
+# remove outliers defined by IQR
+#Q1 <- quantile(NS_stoi_long$STOI, 0.25)
+#Q3 <- quantile(NS_stoi_long$STOI, 0.75)
+#IQR <- Q3 - Q1
+
+#lower_threshold <- Q1 - 1.5 * IQR
+#upper_threshold <- Q3 + 1.5 * IQR
+
+#NS_stoi_filtered <- NS_stoi_long[NS_stoi_long$STOI >= lower_threshold & NS_stoi_long$STOI <= upper_threshold, ]
+
+# plot the filtered data
+#ggplot(NS_stoi_filtered, aes(Iterations, STOI, color = Model)) +
+  #theme_bw()+  
+  #scale_x_discrete(breaks = levels(NS_stoi_long$Iterations)[seq(1, length(levels(NS_stoi_long$Iterations)),by = 4)])+
+  #geom_boxplot()
+
+
+
+
+
+
+#########################
+#  PART II (FILTERING)  #   
+#########################
+
+# Calculate the mean and SD for filtered data 
+#NS_long_stats_filtered <- NS_stoi_filtered %>% 
+  #group_by(Iterations, Model) %>% 
+  #summarize(mean_stoi = mean(STOI),
+  #          sd_stoi = sd(STOI))
+
+# Convert into numeric
+NS_long_stats$Iterations <- as.numeric(as.character(NS_long_stats$Iterations))
+
+### DEFINE THE ERRORBAR ###
+bar_points_NS <- list( n2 = c(630000,630500,631500,632000,632500,633000,655000),
+                    n3 = c(630000,630500,631500,633000,634500,637000,655000),
+                    n4 = c(630000,630500,631000,632000,635500,640500,655000),
+                    n5 = c(630000,630500,631000,632000,636500,640000,655000),
+                    s1 = c(630000,630500,631000,632000,632000,632500,655000))
+
+# Create a dataframe for errorbar data 
+errorbar_data_NS <- data.frame()
+
+# Iterate over each data point
+for (model in names(bar_points_NS)) {
+  points = bar_points_NS[[model]]
+  # filter data from the long df for errorbar
+  filtered_points_errorbar <- NS_long_stats %>% 
+    filter(Iterations %in% points, Model == model)
+  # combine the data 
+  errorbar_data_NS <- rbind(errorbar_data_NS, filtered_points_errorbar)
+}
+
+
+
+########## PLOT THE GENERAL DATA ###########
+ggplot(NS_long_stats, aes(x = Iterations, y = mean_stoi, color = Model)) +
+  
+  # Plot setting
+  geom_line() +
+  #geom_vline(xintercept = desired_checkpoints, linetype = "dashed", color = "#0000FF", alpha = 0.3) +
+  
+  # Error bar setting
+  #geom_errorbar(data = errorbar_data_NS,
+                #aes(ymin = mean_stoi - sd_stoi, ymax = mean_stoi + sd_stoi),
+                #color = "black",
+                #size = 0.1,
+                #alpha = 0.7,
+                #linewidth = 0.8,
+                #show.legend = FALSE) +
+  # Themes
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+        legend.position = "right",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10)) +
+  
+  # Axis setting
+  labs(x = "Iterations", y = "Mean STOI", 
+       color = "Model", 
+       title = "Mean STOI Scores of Standard-Audiogram Vocoders (Exp.I)") +
+  scale_x_continuous(breaks = seq(630000, 655000, 3000), 
+                     labels = seq(0, 25000, 3000)) +
+  scale_color_manual (breaks = legend_order_NS,
+                      labels = legend_labels_NS,
+                      values = viridis(length(legend_order_NS)))+
+  guides(color = guide_legend(ncol = 1))
+  #scale_color_manual(values = rainbow(length(unique(NS_long_stats$Model))))+
+
+
+
+
+############ PLOT THE CHECKPOINTS OF INTEREST #############
+# Define the desired checkpoints
+desired_checkpoints <- c(630000, 630500, 631000, 632000, 633000, 640000, 655000)
+modified_checkpoints <- c(0, 500, 1000, 2000, 3000, 10000, 25000)
+
+# Define legend 
+legend_labels_NS = c("N2 vocoder",
+                     "N3 vocoder",
+                     "N4 vocoder",
+                     "N5 vocoder",
+                     "S1 vocoder")
+legend_order_NS = c("n2", "n3", "n4", "n5", "s1")
+
+# Filter the data for the desired checkpoints
+filtered_data_NS <- NS_stoi_long %>% 
+  filter(Iterations %in% desired_checkpoints)
+
+### PLOT THE POINTS OF INTERESTS ###
+ggplot(filtered_data_NS, aes(x = Iterations, y = STOI, fill = Model, group = interaction(Iterations, Model))) +
+  geom_boxplot(outlier.shape = 21, outlier.size = 1.5, outlier.alpha = 0.5, 
+               position = position_dodge(width = 0.75)) +
+  
+  # Themes
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 12),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10)) +
+  
+  # Axis and legend setting
+  labs(x = "Iterations", y = "STOI scores", 
+       fill = "Model", 
+       title = "Checkpoints of Interest from Standard-Audiogram Amplification") +
+  scale_x_discrete(labels = c("0", "500", "1000", "2000", "3000", "10000", "25000")) +
+  scale_fill_manual(breaks = legend_order_NS,
+                    labels = legend_labels_NS, 
+                    values = viridis(length(legend_order_NS))) +
+  guides(fill = guide_legend(ncol = 5))
+
+
+
+########### The SD & HI heatmap #############
+errorbar_data_NS <- filtered_data_NS %>%
+  group_by(Iterations, Model) %>%
+  summarise(mean_STOI = mean(STOI),
+            sd_STOI = sd(STOI))
+
+errorbar_data_HI <- filtered_data_HI %>%
+  group_by(Iterations, Model) %>%
+  summarise(mean_STOI = mean(STOI),
+            sd_STOI = sd(STOI))
+
+combined_errorbar_data <- rbind(errorbar_data_NS, errorbar_data_HI)
+
+# Create the heatmap of both HI and NS
+ggplot(combined_errorbar_data, aes(x = Iterations, y = Model, fill = sd_STOI)) +
+  geom_tile(color = 'white') +
+  geom_text(aes(label = round(sd_STOI, 3)), color = "white", size = 3, vjust = 0.5) +
+  
+  # Themes
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  
+  # Axis and legend settings
+  labs(x = "Iterations", y = "Model", fill = "Standard Deviation") +
+  scale_x_discrete(labels = c("0", "500", "1000", "2000", "3000", "10000", "25000"))+
+  scale_fill_viridis() +
+  theme(legend.position = "right")
+
+
+
+#########################
+#  PART III (ANOVA)  #   
+#########################
+
+# ANOVA
+library(stats)
+library(nlme)
+
+NS_stoi_long$Iterations <- as.factor(NS_stoi_long$Iterations)
+NS_stoi_long$Model <- as.factor(NS_stoi_long$Model)
+
+result_NS <- aov(STOI ~ Model*Iterations, data = NS_stoi_long)
+
+# Summarize the ANOVA results
+summary(result_NS)
+
+# Conduct Tukey post-hoc 
+posthoc_NS = TukeyHSD(result_NS)
+print(posthoc_NS)
+
+# Convert posthoc into dataframe
+posthoc_df <- as.data.frame(posthoc_NS$`Model:Iterations`) %>% 
+  rownames_to_column(var = "Comparison")
+
+# Setting comparison info.
+desired_model <- "s1"
+
+# Filter out unwanted info.
+filtered_posthoc <- posthoc_df %>%
+  filter(grepl(paste0(desired_model, ":\\d+-", desired_model), Comparison))
+
+# Save the posthoc files 
+write.csv(filtered_posthoc, "/posthoc_filtered_s1.csv")      # modify your output directory
+
+# Save files
+write.csv(NS_stoi_filtered, "your directory")
