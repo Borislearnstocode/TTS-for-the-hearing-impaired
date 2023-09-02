@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+Created on Sun Jul 23 12:26:54 2023
+
+@author: haotian
+
+This snippet is used to calculate the MOS 
+
+"""
+
+
+import os
+import pandas as pd
+import numpy as np
+
+"""
+
+Calculate the MOS
+
+"""
+
+# Function to calculate mean score for a category
+def calculate_mean_score(names, scores, category):
+    category_scores = [score for name, score in zip(names, scores) if name.startswith(category)]
+    if len(category_scores) > 0:
+        return sum(category_scores) / len(category_scores)
+    else:
+        return 0
+
+# Get a list of all .txt files in the folder
+folder_path = 'MOS/MOS offcial/data_test'                       # your directory
+file_names = [f for f in os.listdir(folder_path) if f.endswith('.txt')]
+
+# Initialize dictionaries to store scores for each category
+mean_scores = {'hi': 0, 'nh': 0, '10': 0, '1': 0}
+
+# Process each .txt file
+for file_name in file_names:
+    with open(os.path.join(folder_path, file_name), 'r') as file:
+        lines = file.readlines()
+
+    # Separate stimuli names and scores
+    stimuli = []
+    scores = []
+    for line in lines:
+        name, score = line.strip().split(',')
+        stimuli.append(name.strip().split('/')[1])
+        scores.append(int(score))
+
+    # Update mean scores for each category
+    for category in mean_scores.keys():
+        mean_scores[category] += calculate_mean_score(stimuli, scores, category)
+
+# Calculate overall mean scores
+num_files = len(file_names)
+for category in mean_scores.keys():
+    mean_scores[category] /= num_files
+
+# Print the mean scores
+print("Mean score for stimuli starting with 'hi':", mean_scores['hi'])
+print("Mean score for stimuli starting with 'nh':", mean_scores['nh'])
+print("Mean score for stimuli starting with '10':", mean_scores['10'])
+print("Mean score for stimuli starting with '1':", mean_scores['1'])
+
+
+
+"""
+
+Make the raw data a dataframe
+
+"""
+
+
+# Initialize a dictionary to store the raw data
+raw_data = {}
+
+# Process each .txt file
+for file_name in file_names:
+    with open(os.path.join(folder_path, file_name), 'r') as file:
+        lines = file.readlines()
+
+    # Separate stimuli names and scores
+    stimuli = []
+    scores = {}
+    for line in lines:
+        name, score = line.strip().split(',')
+        stimuli.append(name.strip().split('/')[1].split('.')[0])
+        scores[stimuli[-1]] = int(score)
+
+    # Add the scores to the raw_data dictionary with file_name as key
+    raw_data[file_name] = scores
+
+print(raw_data)
+
+
+# Assuming stimuli are the same for all file names, let's use the first file_name
+stimuli_list = list(raw_data[file_names[0]].keys())
+
+# Create a DataFrame from the raw_data dictionary
+participant_scores_df = pd.DataFrame.from_dict(raw_data, orient='index', columns=stimuli_list)
+
+print(participant_scores_df)
+
+# Convert row names into a column
+participant_scores_df.reset_index(inplace=True, drop=False)
+
+# Insert a new column to the dataframe 
+participant_scores_df.insert(1, 'part_num', range(1,21))
+
+# Save the file
+participant_scores_df.to_csv("MOS.csv", index = True)
+
+# Conver into long dataframe and save again
+MOS_long = pd.melt(participant_scores_df, id_vars=['index', 'part_num'], var_name='stimuli', value_name='scores')
+MOS_long['stimuli'] = MOS_long['stimuli'].str.split('_').str[0]
+MOS_long.to_csv("MOS_long.csv", index = True)
+
+
