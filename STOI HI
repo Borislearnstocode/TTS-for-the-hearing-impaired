@@ -1,0 +1,237 @@
+library('tidyverse')
+library('ggplot2')
+
+# import data
+data_10k = read.csv("STOI_10k.csv")
+data_1k = read.csv("STOI_1k.csv")
+data_100 = read.csv("STOI_100.csv")
+data_50 = read.csv("STOI_50.csv")
+data_10 = read.csv("STOI_10.csv")
+data_1 = read.csv("STOI_1.csv")
+
+# Reshape the data structure 
+raw_10k <- data_10k %>% 
+  gather(models, stoi_10k, 1:51) %>% 
+  arrange(models)
+
+raw_1k <- data_1k %>% 
+  gather(models, stoi_1k, 1:51) %>% 
+  arrange(models)
+
+raw_100 <- data_100 %>% 
+  gather(models, stoi_100, 1:51) %>% 
+  arrange(models)
+
+raw_50 <- data_50 %>% 
+  gather(models, stoi_50, 1:51) %>% 
+  arrange(models)
+
+
+# Combine the data into one DataFrame and get rid of the X in the model names
+HI_stoi <- bind_cols(raw_10k$models,
+                     raw_10k$stoi_10k, 
+                     raw_1k$stoi_1k, 
+                     raw_100$stoi_100,
+                     raw_50$stoi_50) %>% 
+  set_names(c("Iterations","stoi_10k","stoi_1k","stoi_100", 
+              "stoi_50"))
+
+HI_stoi$Iterations <- gsub("^X", "", HI_stoi$Iterations)
+
+###########################
+#  PARTI (MODIFY THE DF)  #
+###########################
+
+# Covert the dataset into a longer format
+HI_stoi_long <- HI_stoi %>%
+  pivot_longer(cols = starts_with("stoi_"), names_to = "Model", values_to = "STOI") %>% 
+  mutate(Model = str_replace(Model, "stoi_", ""))
+
+# Calculate the mean and SD
+HI_long_stats <- HI_stoi_long %>% 
+  group_by(Iterations, Model) %>% 
+  summarize(mean_stoi = mean(STOI),
+            sd_stoi = sd(STOI))
+
+
+
+
+
+########## PLOTTING THE GENERAL DATA ###########
+
+# Convert into numeric
+HI_long_stats$Iterations <- as.numeric(HI_long_stats$Iterations)
+
+# Define legend 
+legend_labels_HI = c("10k-file vocoder",
+                  "1k-file vocoder",
+                  "100-file vocoder",
+                  "50-file vocoder",
+                  "10-file vocoder",
+                  "1-file vocoder")
+legend_order_HI = c("10k", "1k", "100", "50", "10", "1")
+
+
+### IF YOU WOULD NEED ERROR BAR IN THE MAIN GRAPH ###
+#""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""#
+# Define the colors 
+#HI_colors <- c("#00FF00", "#FF00CC", "#0000FF", "#FFFF00")
+
+
+### DEFINE THE ERRORBAR ###
+#bar_points_HI <- list( "10k" = c(630000,630500,631500,632000,632500,633000,655000),
+                       #"1k" = c(630000,630500,631500,632000,633000,633500,655000),
+                       #"100" = c(630000,630500,631000,631500,632000,632500,655000),
+                       #"50" = c(630000,630500,631500,631500,631500,615000,655000))
+
+# Create a dataframe for errorbar data 
+#errorbar_data_HI <- data.frame()
+
+# Iterate over each data point
+#for (model in names(bar_points_HI)) {
+  #points = bar_points_HI[[model]]
+  # filter data from the long df for errorbar
+  #filtered_points_errorbar <- HI_long_stats %>% 
+    #filter(Iterations %in% points, Model == model)
+  # combine the data 
+  #errorbar_data_HI <- rbind(errorbar_data_HI, filtered_points_errorbar)
+#}
+#""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""#
+
+
+install.packages("viridis")
+library(viridis)
+
+### PLOT THE MAIN GRAPH ###
+ggplot(HI_long_stats, aes(x = Iterations, y = mean_stoi, color = Model)) +
+  
+  # Error bar setting
+ # geom_errorbar(data = errorbar_data_HI,
+                #aes(ymin = mean_stoi - sd_stoi, ymax = mean_stoi + sd_stoi),
+                #color = "black",
+                #size = 0.1,
+                #alpha = 0.7,
+                #linewidth = 0.8,
+                #show.legend = FALSE) +
+  
+  # Plot setting
+  geom_line() +
+  # geom_vline(xintercept = desired_checkpoints, linetype = "dashed", color = "#0000FF", alpha = 0.3) +
+  # geom_point() +
+  
+  #Themes
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10))+
+  
+  # Legend & Axis setting
+  labs(x = "Iterations", y = "Mean STOI", 
+       color = "Model", 
+       title = "Mean STOI Scores of Patient-Audiogram Amplification") +
+  scale_x_continuous(breaks = seq(630000, 655000, 2000), 
+                     labels = seq(0, 25000, 2000)) +
+  #scale_y_continuous(limits = c(0.775, 0.975))+
+  scale_color_manual (breaks = legend_order_HI,
+                     labels = legend_labels_HI,
+                     values = viridis(length(legend_order_HI)))+
+  guides(color = guide_legend(ncol = 2))
+
+
+
+############# PLOT THE CHECKPOINTS OF INTERESTS ################
+
+# Define the desired checkpoints
+desired_checkpoints <- c(630000, 630500, 631000, 632000, 633000, 640000, 655000)
+modified_checkpoints <- c(0, 500, 1000, 2000, 3000, 10000, 25000)
+
+# Filter the data for the desired checkpoints
+filtered_data_HI <- HI_stoi_long %>% 
+  filter(Iterations %in% desired_checkpoints)
+
+# Combine the two dataframes
+combined_errorbar_data <- bind_rows(errorbar_data_HI, errorbar_data_NS)
+
+
+#### PLOTTING THE POINTS OF INTEREST ####
+
+legend_labels_POI = c("10k-file",
+                     "1k-file",
+                     "100-file",
+                     "50-file",
+                     "10-file",
+                     "1-file",
+                     "n2",
+                     "n3",
+                     "n4",
+                     "n5",
+                     "s1")
+
+legend_order_POI = c("10k", "1k", "100", "50", "10","1",
+                     "n2", "n3", "n4", "n5", "s1")
+legend_title <- "Abrreviated Vocoder Names"
+
+# Plot the combined data
+ggplot(combined_errorbar_data, aes(x = Iterations, y = mean_STOI, color = Model, shape = Model)) +
+  geom_errorbar(aes(ymin = mean_STOI - sd_STOI, ymax = mean_STOI + sd_STOI),
+                width = 0.6, position = position_dodge(width = 1)) +
+  geom_point(size = 3, position = position_dodge(width = 1)) +  
+  
+  # Themes
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, size = 13, face = "bold"),
+        legend.position = "right",
+        legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10)) +
+  
+  # Axis and legend setting
+  labs(x = "Iterations", y = "STOI scores",
+       title = "Means and Standard Deviations of Seven Checkpoints") +
+  scale_x_discrete(labels = c("0", "500", "1000", "2000", "3000", "10000", "25000")) +
+  
+  # Customize the combined legend
+  scale_shape_manual(breaks = legend_order_POI,
+                     labels = legend_labels_POI,
+                     values = c(7, 8, 9, 10, 12, 13, 15, 16, 17, 18, 19)) +
+  scale_color_manual(labels = legend_labels_POI,
+                     values = viridis(length(legend_order_POI))) +
+  scale_fill_manual(legend_title,values=viridis(length(legend_order_POI)))
+
+
+
+# ANOVA
+# Load the necessary library (if not already loaded)
+library(stats)
+
+# Perform ANOVA
+HI_stoi_long$Iterations <- as.factor(HI_stoi_long$Iterations)
+HI_stoi_long$Model <- as.factor(HI_stoi_long$Model)
+
+result_HI <- aov(STOI ~ Model*Iterations, data = HI_stoi_long)
+
+# Summarize the ANOVA results
+summary(result_HI)
+
+# Conduct Tukey post-hoc 
+posthoc_HI = TukeyHSD(result_HI)
+print(posthoc_HI)
+
+# Convert posthoc into dataframe
+posthoc_df <- as.data.frame(posthoc_HI_full$`Model:Iterations`) %>% 
+  rownames_to_column(var = "Comparison")
+
+# Setting comparison info.
+desired_model_1 <- "1k"
+desired_model_2 <- "10k"
+
+# Filter out unwanted info.
+filtered_posthoc <- posthoc_df %>%
+  filter(grepl(paste0(desired_model_1, ":\\d+-", desired_model_2), Comparison))
+
+# Save the posthoc files 
+write.csv(filtered_posthoc, " your output directory ")           # modify your output directory
