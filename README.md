@@ -11,9 +11,14 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 <br />(1) Calculate MOS
 <br />(2) MOS evaluation
 3. STOI
-<br /> (1) Combined HI
-<br /> (2) Compute STOI
-<br /> (3) STOI HI
-<br /> (4) STOI demo
-<br /> (5) STOI standard_audiograms
-6. Training
+<br /> (1) Combined HI: Does the same job as STOI HI, but with Experiment I, Experiment IIa and IIb (i.e. standard audiogram and patient audiogram vocoders)
+<br /> (2) Compute STOI: Compute STOI from the test speech and original speech  
+<br /> (3) STOI HI: Reads cleaned STOI data from the patient-audiogram condition. Performs basic data wrangling and visualization before ANOVA.  
+<br /> (4) STOI demo: Generates heatmaps and waveforms to demonstrate the rationale of STOI.
+<br /> (5) STOI standard_audiograms: Does the same job as STOI HI, but with the standard-audiogram vocoders.
+4. Training
+<br /> (1) Train config: configurations for transfer learning (need a fully-trained WaveGLow (630k iterations) before adaptation)
+<br /> (2) Train HI: Training the vocoders according to a certain config file. This is the main training file.
+
+### Others
+<be /> (1) Some other MATLAB codes I used in this thesis, such as inverse amplification, were modified based on codes owned by Josef Schlittenlacher and were not open source, thus I didn't post them here. If required, go to https://arxiv.org/abs/2012.02174 or https://github.com/js2251.
