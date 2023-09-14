@@ -5,4 +5,7 @@ This repository contains all codes I used for my master's thesis: Transfer Learn
 This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher
 
 ### CONTENTS ###
-1. Inference 
+1. Inference
+2. MOS
+3. STOI
+4. Training
