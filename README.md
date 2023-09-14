@@ -4,7 +4,7 @@ This repository contains most of the codes I used for my master's thesis: Transf
 
 This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher (https://www.schlittenlacher.com/)
 
-### BRANCH CONTENTS TABLE
+### BRANCH CONTENT TABLE
 1. Inference
 <br />(1) Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on their own directory.
 2. MOS
