@@ -1,4 +1,4 @@
-# TTS-for-the-hearing-impaired
+# Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 ### STATEMENT
 This repository contains all codes I used for my master's thesis: Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 
