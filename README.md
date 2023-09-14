@@ -6,9 +6,9 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 
 ### CONTENTS ###
 1. Inference
-/Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on their own directory.
+<br />Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on their own directory.
 2. MOS
-/Calculate MOS
-/MOS evaluation
+<br />Calculate MOS
+<br />MOS evaluation
 5. STOI
 6. Training
