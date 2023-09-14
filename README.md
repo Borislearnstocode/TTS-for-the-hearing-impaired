@@ -6,6 +6,7 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 
 ### CONTENTS ###
 1. Inference
-2. MOS
-3. STOI
-4. Training
+   Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on your own directory.
+3. MOS
+4. STOI
+5. Training
