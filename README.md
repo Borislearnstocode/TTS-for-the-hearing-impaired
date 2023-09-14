@@ -1,6 +1,6 @@
 # Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 ### STATEMENT
-This repository contains all codes I used for my master's thesis: Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
+This repository contains most of the codes I used for my master's thesis: Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 
 This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher (https://www.schlittenlacher.com/)
 
