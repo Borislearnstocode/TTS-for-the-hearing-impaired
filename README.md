@@ -2,7 +2,7 @@
 ### STATEMENT
 This repository contains all codes I used for my master's thesis: Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 
-This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher
+This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher (https://www.schlittenlacher.com/)
 
 ### BRANCH CONTENTS TABLE
 1. Inference
@@ -20,9 +20,9 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 <br /> (1) Train config: configurations for transfer learning (need a fully-trained WaveGLow (630k iterations) before adaptation).
 <br /> (2) Train HI: Training the vocoders according to a certain config file. This is the main training file.
 
-### Others
-<br /> (1) Some other MATLAB codes I used in this thesis, such as inverse amplification, were modified based on codes owned by Josef Schlittenlacher and were not open source, thus I didn't post them here. If required, go to https://arxiv.org/abs/2012.02174 or https://github.com/js2251.
+### OTHERS
+(1) Some other MATLAB codes I used in this thesis, such as inverse amplification, were modified based on codes owned by Josef Schlittenlacher and were not open source, thus I didn't post them here. If required, go to https://arxiv.org/abs/2012.02174 or https://github.com/js2251.
 <br /> (2) The codes were not well-structured basically because of the follow-up (ExpIIb) test we included during our experiment and I made some other attempts or changes during processing the data. However, the files contain all the essential scripts. One may selectively refer to part of these codes.
 
-### Acknowledgement 
-<be /> I would like to thank my supervisor, Dr. Josef Schlittenlacher (https://www.schlittenlacher.com/), for all his help and suggestions during my master's program. 
+### ACKNOWLEDGEMENT
+<be /> I would like to thank my supervisor, Dr. Josef Schlittenlacher, for all his help and suggestions during my master's program. 
