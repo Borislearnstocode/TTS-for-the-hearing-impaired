@@ -21,7 +21,7 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 <br /> (2) Train HI: Training the vocoders according to a certain config file. This is the main training file.
 
 ### OTHERS
-(1) Some other MATLAB codes I used in this thesis, such as inverse amplification, were modified based on codes owned by Josef Schlittenlacher and were not open source, thus I didn't post them here. If required, go to https://arxiv.org/abs/2012.02174 or https://github.com/js2251.
+(1) Some other MATLAB/Python codes I used in this thesis, such as inverse amplification and other training-related files, were modified based on codes owned by Josef Schlittenlacher and were not open source, thus I didn't post them here. If required, go to https://arxiv.org/abs/2012.02174 or https://github.com/js2251.
 <br /> (2) The codes were not well-structured because of the follow-up (Exp IIb) test we included during our experiment and because I made some other attempts or changes during processing the data. However, the files contain all the essential scripts. One may selectively refer to part of these codes.
 
 ### ACKNOWLEDGEMENT
