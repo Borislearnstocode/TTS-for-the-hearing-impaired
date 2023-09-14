@@ -8,16 +8,16 @@ This repository is a collaborative work with my supervisor, Dr. Josef Schlittenl
 1. Inference
 <br />(1) Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on their own directory.
 2. MOS
-<br />(1) Calculate MOS: Calculates the MOS based on the raw data from Prolific (https://www.prolific.co/)
+<br />(1) Calculate MOS: Calculates the MOS based on the raw data from Prolific (https://www.prolific.co/).
 <br />(2) MOS evaluation: Conducts data wrangling, descriptives and ANOVA on the MOS.
 3. STOI
-<br /> (1) Combined HI: Does the same job as STOI HI, but with Experiment I, Experiment IIa and IIb (i.e. standard audiogram and patient audiogram vocoders)
-<br /> (2) Compute STOI: Compute STOI from the test speech and original speech  
-<br /> (3) STOI HI: Reads cleaned STOI data from the patient-audiogram condition. Performs basic data wrangling and visualization before ANOVA.  
+<br /> (1) Combined HI: Does the same job as STOI HI, but with Experiment I, Experiment IIa and IIb (i.e. standard audiogram and patient audiogram vocoders).
+<br /> (2) Compute STOI: Compute STOI from the test speech and original speech.
+<br /> (3) STOI HI: Reads cleaned STOI data from the patient-audiogram condition. Performs basic data wrangling and visualization before ANOVA.
 <br /> (4) STOI demo: Generates heatmaps and waveforms to demonstrate the rationale of STOI.
 <br /> (5) STOI standard_audiograms: Does the same job as STOI HI, but with the standard-audiogram vocoders.
 4. Training
-<br /> (1) Train config: configurations for transfer learning (need a fully-trained WaveGLow (630k iterations) before adaptation)
+<br /> (1) Train config: configurations for transfer learning (need a fully-trained WaveGLow (630k iterations) before adaptation).
 <br /> (2) Train HI: Training the vocoders according to a certain config file. This is the main training file.
 
 ### Others
