@@ -1,10 +1,10 @@
 # TTS-for-the-hearing-impaired
-### STATEMENT ###
+### STATEMENT
 This repository contains all codes I used for my master's thesis: Transfer Learning to Quickly Adapt a Text-to-Speech System for the Hearing Impaired
 
 This repository is a collaborative work with my supervisor, Dr. Josef Schlittenlacher
 
-### BRANCH CONTENTS TABLE###
+### BRANCH CONTENTS TABLE
 1. Inference
 <br />(1) Inference mult: Used for Inference. Users need to manually create a test list of audio and mel (.wav and .wav.pt) based on their own directory.
 2. MOS
